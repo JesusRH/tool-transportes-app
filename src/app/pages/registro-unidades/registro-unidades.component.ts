@@ -7,35 +7,33 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './registro-unidades.component.html',
-  styleUrls: ['./registro-unidades.component.css'] // 👈 corregido: styleUrls (plural)
+  styleUrls: ['./registro-unidades.component.css']
 })
 export default class RegistroUnidadesComponent {
   unidadForm: FormGroup;
-  folioActual = 101; // Ejemplo de folio
+  folioActual = 101;
   posting = false;
-  mostrarModal = false; // 👈 nuevo: controla la ventana flotante
+  mostrarModal = false;
+
+  // 👇 nuevo: arreglo para almacenar las unidades registradas
+  unidadesRegistradas: any[] = [];
 
   constructor(private fb: FormBuilder) {
     this.unidadForm = this.fb.group({
-      // Datos del Tracto
       modelo: ['', Validators.required],
       color: ['', Validators.required],
       placaTracto: ['', Validators.required],
 
-      // Góndolas
       placaGondola1: [''],
       placaGondola2: [''],
 
-      // Producto
       mina: [''],
       producto: [''],
 
-      // Operador
       operador: ['', Validators.required],
-      telefono: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]], // 👈 validación de teléfono
+      telefono: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
 
-      // Carga
-      cantidadM3: [0, [Validators.required, Validators.min(1)]], // 👈 debe ser mayor a 0
+      cantidadM3: [0, [Validators.required, Validators.min(1)]],
       observaciones: ['']
     });
   }
@@ -47,15 +45,20 @@ export default class RegistroUnidadesComponent {
   guardarUnidad() {
     if (this.unidadForm.valid) {
       this.posting = true;
-      console.log('Datos registrados:', this.unidadForm.value);
+      const nuevaUnidad = { ...this.unidadForm.value, folio: this.folioActual };
 
-      // Simulación de espera
       setTimeout(() => {
         this.posting = false;
-        this.mostrarModal = true; // 👈 mostrar modal al terminar
+        this.mostrarModal = true;
+
+        // 👇 guardar en el arreglo
+        this.unidadesRegistradas.push(nuevaUnidad);
+
+        // 👇 incrementar folio
+        this.folioActual++;
+        this.unidadForm.reset();
       }, 2000);
     } else {
-      // Si el formulario no es válido, marcar todos los campos como tocados
       this.unidadForm.markAllAsTouched();
     }
   }

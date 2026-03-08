@@ -1,0 +1,30 @@
+<h1 class="text-3xl">Loggin</h1>
+<hr class="my-2" />
+
+<section>
+  <p class="mb-4">Pagina de incio de sesion</p>
+  <form class=" flex flex-col  gap-2"
+  [formGroup]="loggingForm"
+  (ngSubmit)="onSubmit()"
+  >
+
+  <input
+  type="text" class="grow text-gray-800 placeholder-gray-400 bg-white px-2 py-1 outline-none " placeholder="Correo Electronico"
+  formControlName="email"
+  />
+
+  <input
+  type="password" class="grow text-gray-800 placeholder-gray-400 bg-white px-2 py-1 outline-none" placeholder="Contrasena"
+  formControlName="password"
+  />
+
+  <button type="submit"  class="btn bg-teal-300">Logging</button>
+  @if(hasError()){
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+  <strong class="font-bold">¡Error!</strong>
+  <span>Por favor revise la informacion ingresada .</span>
+</div>
+  }
+
+  </form>
+</section>

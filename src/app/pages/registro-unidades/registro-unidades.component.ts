@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
 
 @Component({
   selector: 'app-registro-unidades',
@@ -17,7 +20,11 @@ export default class RegistroUnidadesComponent {
    mostrarColumnaOculta: boolean = false;
 
   // 👇 nuevo: arreglo para almacenar las unidades registradas
-  unidadesRegistradas: any[] = [];
+  unidadesRegistradas = [
+    { folio: 'F001', modelo: 'Volvo', color: 'Rojo', placaTracto: 'ABC123', placaGondola1: 'XYZ789', placaGondola2: 'LMN456', cantidadM3: 20, operador: 'Juan Pérez', telefono: '555-1234', observaciones: 'Buen estado' },
+    { folio: 'F002', modelo: 'Kenworth', color: 'Azul', placaTracto: 'DEF456', placaGondola1: 'UVW111', placaGondola2: 'OPQ222', cantidadM3: 25, operador: 'Carlos López', telefono: '555-5678', observaciones: 'Revisión pendiente' }
+  ];
+
 
   constructor(private fb: FormBuilder) {
     this.unidadForm = this.fb.group({
@@ -38,6 +45,8 @@ export default class RegistroUnidadesComponent {
       observaciones: ['']
     });
   }
+
+
 
   isPosting() {
     return this.posting;
@@ -67,4 +76,24 @@ export default class RegistroUnidadesComponent {
   cerrarModal() {
     this.mostrarModal = false;
   }
+
+  generarPDF() {
+    const doc = new jsPDF();
+
+    doc.text('Reporte de Unidades Registradas', 14, 15);
+
+    autoTable(doc, {
+      head: [['Folio', 'Modelo', 'Color', 'Placa Tracto', 'Góndola 1', 'Góndola 2', 'M³', 'Operador', 'Teléfono', 'Notas']],
+      body: this.unidadesRegistradas.map(u => [
+        u.folio, u.modelo, u.color, u.placaTracto, u.placaGondola1, u.placaGondola2,
+        u.cantidadM3, u.operador, u.telefono, u.observaciones
+      ]),
+      startY: 20,
+    });
+
+    doc.save('unidades.pdf');
+  }
+
+
+
 }

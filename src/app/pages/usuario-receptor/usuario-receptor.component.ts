@@ -21,7 +21,7 @@ export default class UsuarioReceptorComponent implements OnInit {
   public horaRecepcion = '';
 
   public datosDB: any = {
-    folio: 'M-998234',
+    folio: '0001',
     transportista: 'LOGÍSTICA INTEGRAL S.A.',
     modelo: 'FREIGHTLINER CASCADIA',
     color: 'ROJO ÓXIDO',
@@ -34,8 +34,8 @@ export default class UsuarioReceptorComponent implements OnInit {
     observaciones: 'Carga verificada en báscula de salida. Lona colocada.',
     operador: 'MARCO ANTONIO SOLÍS',
     telefono: '555-987-6543',
-    mina: 'MINA "LA ESPERANZA"',
-    producto: 'ARENA SÍLICA',
+    mina: 'Mina San Pedro"',
+    producto: 'Grava',
     cantidadM3: 30.00
   };
 

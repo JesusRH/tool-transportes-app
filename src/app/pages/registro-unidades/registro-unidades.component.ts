@@ -11,9 +11,10 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 })
 export default class RegistroUnidadesComponent {
   unidadForm: FormGroup;
-  folioActual = 101;
+  folioActual:any = "0001";
   posting = false;
   mostrarModal = false;
+   mostrarColumnaOculta: boolean = false;
 
   // 👇 nuevo: arreglo para almacenar las unidades registradas
   unidadesRegistradas: any[] = [];

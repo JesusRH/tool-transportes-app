@@ -15,13 +15,13 @@ export default class MinaComponent implements OnInit {
 
   public minaForm!: FormGroup;
   public isPosting = signal(false);
-  public escaneadoExitoso = signal(false); // Controla si se muestra el formulario
+  public escaneadoExitoso = signal(true); // Controla si se muestra el formulario
   public mostrarEscaner = signal(false);   // Controla si la cámara está encendida
 
-  public nombreDespachador = 'Cargando...';
+  public nombreDespachador = 'Usuario Test';
   public horaActual = '';
   public fechaActual = '';
-  public ultimoFolio = 0;
+  public ultimoFolio:any = 0;
 
   ngOnInit(): void {
     this.initForm();
@@ -98,7 +98,7 @@ export default class MinaComponent implements OnInit {
   }
 
   obtenerFolio() {
-    this.ultimoFolio = 101;
+    this.ultimoFolio = "0001";
     this.minaForm.get('folio')?.setValue(this.ultimoFolio);
   }
 

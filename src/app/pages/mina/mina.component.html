@@ -18,7 +18,8 @@
   </div>
 
   <div *ngIf="escaneadoExitoso()" class="max-w-4xl mx-auto bg-white shadow-lg rounded-xl overflow-hidden">
-
+    <details class="group">
+      <summary class="bg-blue-700 p-4 text-white flex justify-between items-center cursor-pointer">
     <div class="bg-blue-700 p-4 text-white flex justify-between items-center">
       <div class="flex items-center gap-3">
         <h2 class="text-xl font-bold uppercase tracking-wider">Registro de Salida - Mina</h2>
@@ -28,6 +29,8 @@
         <span class="font-mono text-lg font-bold"># {{ ultimoFolio }}</span>
       </div>
     </div>
+    <span class="ml-3 transition-transform group-open:rotate-180">▼</span>
+      </summary>
 
     <form [formGroup]="minaForm" (ngSubmit)="guardarRegistro()" class="p-6 space-y-8">
 
@@ -137,11 +140,78 @@
       </div>
 
       <div class="pt-4">
-        <button type="submit"  class="w-full bg-blue-700 hover:bg-blue-800 disabled:bg-gray-400 text-white font-bold py-5 rounded-xl shadow-xl transition-all uppercase tracking-widest text-lg">
+        <button type="submit" [disabled]="minaForm.invalid || isPosting()" class="w-full bg-blue-700 hover:bg-blue-800 disabled:bg-gray-400 text-white font-bold py-5 rounded-xl shadow-xl transition-all uppercase tracking-widest text-lg">
           {{ isPosting() ? 'Guardando...' : 'Finalizar Registro de Salida' }}
         </button>
       </div>
 
     </form>
+    </details>
+    <div class="max-w-6xl mx-auto bg-white shadow-lg rounded-xl overflow-hidden mt-6">
+      <details class="group">
+        <summary class="bg-gray-800 p-4 text-white flex justify-between items-center cursor-pointer">
+          <h2 class="text-xl font-bold uppercase tracking-wider">Unidades Registradas</h2>
+          <span class="ml-3 transition-transform group-open:rotate-180">▼</span>
+        </summary>
+
+        <div class="p-6 overflow-x-auto">
+          <table class="min-w-full border border-gray-200 rounded-lg shadow-sm">
+            <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
+              <tr>
+                <th class="px-4 py-2 border w-12 text-center text-blue-700">Visualizar mas informacion</th>
+                <th class="px-4 py-2 border">Folio</th>
+                <th class="px-4 py-2 border">Modelo</th>
+                <th *ngIf="mostrarColumnaOculta" class="px-4 py-2 border bg-blue-50 text-blue-700">Color</th>
+                <th class="px-4 py-2 border">Placa Tracto</th>
+                <th *ngIf="mostrarColumnaOculta" class="px-4 py-2 border bg-blue-50 text-blue-700">Góndola 1</th>
+                <th *ngIf="mostrarColumnaOculta" class="px-4 py-2 border bg-blue-50 text-blue-700">Góndola 2</th>
+                <th *ngIf="mostrarColumnaOculta" class="px-4 py-2 border bg-blue-50 text-blue-700">M³</th>
+                <th class="px-4 py-2 border">Operador</th>
+                <th class="px-4 py-2 border">Teléfono</th>
+                <th *ngIf="mostrarColumnaOculta" class="px-4 py-2 border bg-blue-50 text-blue-700">Notas</th>
+              </tr>
+            </thead>
+            <tbody class="text-gray-600 text-sm">
+              <tr *ngFor="let unidad of unidadesRegistradas" class="hover:bg-gray-50 transition-colors">
+                <td class="px-4 py-2 border text-center">
+                  <button (click)="mostrarColumnaOculta = !mostrarColumnaOculta" type="button"
+                    class="hover:scale-125 transition-transform text-lg">
+                    {{ mostrarColumnaOculta ? '👁️‍🗨️' : '👁️' }}
+                  </button>
+                </td>
+                <td class="px-4 py-2 border font-bold">{{ unidad.folio }}</td>
+                <td class="px-4 py-2 border">{{ unidad.modelo }}</td>
+                <td *ngIf="mostrarColumnaOculta" class="px-4 py-2 border bg-blue-50/40 italic">{{ unidad.color }}</td>
+                <td class="px-4 py-2 border">{{ unidad.placaTracto }}</td>
+                <td *ngIf="mostrarColumnaOculta" class="px-4 py-2 border bg-blue-50/40">{{ unidad.placaGondola1 }}</td>
+                <td *ngIf="mostrarColumnaOculta" class="px-4 py-2 border bg-blue-50/40">{{ unidad.placaGondola2 }}</td>
+                <td *ngIf="mostrarColumnaOculta" class="px-4 py-2 border bg-blue-50/40">{{ unidad.cantidadM3 }}</td>
+                <td class="px-4 py-2 border">{{ unidad.operador }}</td>
+                <td class="px-4 py-2 border font-mono">{{ unidad.telefono }}</td>
+                <td *ngIf="mostrarColumnaOculta" class="px-4 py-2 border bg-blue-50/40 text-xs">{{ unidad.observaciones
+                  }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="mt-4 text-right">
+  <button (click)="generarPDF()"
+          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+    Exportar a PDF
+  </button>
+</div>
+
+        </div>
+      </details>
+    </div>
   </div>
+</div>
+
+<!-- Modal de confirmación -->
+<div *ngIf="mostrarModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+  <div class="bg-white rounded-xl shadow-xl p-6 max-w-sm text-center">
+    <h2 class="text-lg font-bold text-gray-800 mb-2">✅ Datos agregados</h2>
+    <p class="text-gray-600">La unidad se registró correctamente.</p>
+    <button (click)="cerrarModal()" class="mt-4 px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800">
+      Cerrar
+    </button>
 </div>

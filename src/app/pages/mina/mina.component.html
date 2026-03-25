@@ -1,6 +1,7 @@
 <div class="min-h-screen bg-gray-100 p-6">
 
-  <div *ngIf="!escaneadoExitoso()" class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg text-center border-t-4 border-blue-700">
+  <div *ngIf="!escaneadoExitoso()"
+    class="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg text-center border-t-4 border-blue-700">
     <h2 class="text-2xl font-bold text-gray-800 mb-4 uppercase">Control de Salida</h2>
     <p class="text-gray-600 mb-8 text-sm">Escanea el código del transportista para habilitar el registro de carga.</p>
 
@@ -20,132 +21,149 @@
   <div *ngIf="escaneadoExitoso()" class="max-w-4xl mx-auto bg-white shadow-lg rounded-xl overflow-hidden">
     <details class="group">
       <summary class="bg-blue-700 p-4 text-white flex justify-between items-center cursor-pointer">
-    <div class="bg-blue-700 p-4 text-white flex justify-between items-center">
-      <div class="flex items-center gap-3">
-        <h2 class="text-xl font-bold uppercase tracking-wider">Registro de Salida - Mina</h2>
-      </div>
-      <div class="text-right">
-        <span class="text-xs block opacity-80 text-blue-200">Folio Sistema</span>
-        <span class="font-mono text-lg font-bold"># {{ ultimoFolio }}</span>
-      </div>
-    </div>
-    <span class="ml-3 transition-transform group-open:rotate-180">▼</span>
+        <div class="bg-blue-700 p-4 text-white flex justify-between items-center">
+          <div class="flex items-center gap-3">
+            <h2 class="text-xl font-bold uppercase tracking-wider">Registro de Salida - Mina</h2>
+          </div>
+          <div class="text-right">
+            <span class="text-xs block opacity-80 text-blue-200">Folio Sistema</span>
+            <span class="font-mono text-lg font-bold"># {{ ultimoFolio }}</span>
+          </div>
+        </div>
+        <span class="ml-3 transition-transform group-open:rotate-180">▼</span>
       </summary>
 
-    <form [formGroup]="minaForm" (ngSubmit)="guardarRegistro()" class="p-6 space-y-8">
+      <form [formGroup]="minaForm" (ngSubmit)="guardarRegistro()" class="p-6 space-y-8">
 
-      <section>
-        <div class="flex items-center border-b border-gray-200 pb-2 mb-4">
-          <span class="bg-blue-100 text-blue-700 p-2 rounded-full mr-3 text-sm font-bold">01</span>
-          <h3 class="text-lg font-semibold text-gray-700 uppercase">Datos del Tracto</h3>
+        <section>
+          <div class="flex items-center border-b border-gray-200 pb-2 mb-4">
+            <span class="bg-blue-100 text-blue-700 p-2 rounded-full mr-3 text-sm font-bold">01</span>
+            <h3 class="text-lg font-semibold text-gray-700 uppercase">Datos del Tracto</h3>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex flex-col">
+              <label class="text-xs font-semibold text-gray-500 mb-1 uppercase">Transportista</label>
+              <input type="text" formControlName="transportista"
+                class="bg-gray-50 border border-gray-300 text-gray-600 rounded-lg p-2.5 cursor-not-allowed">
+            </div>
+            <div class="flex flex-col">
+              <label class="text-xs font-semibold text-gray-500 mb-1 uppercase">Modelo del Tracto</label>
+              <input type="text" formControlName="modelo"
+                class="bg-gray-50 border border-gray-300 text-gray-600 rounded-lg p-2.5 cursor-not-allowed">
+            </div>
+            <div class="flex flex-col">
+              <label class="text-xs font-semibold text-gray-500 mb-1 uppercase">Color</label>
+              <input type="text" formControlName="color"
+                class="bg-gray-50 border border-gray-300 text-gray-600 rounded-lg p-2.5 cursor-not-allowed">
+            </div>
+            <div class="flex flex-col">
+              <label class="text-xs font-semibold text-gray-500 mb-1 uppercase">Placa del Tracto</label>
+              <input type="text" formControlName="placaTracto"
+                class="bg-gray-50 border border-gray-300 text-gray-800 font-bold rounded-lg p-2.5 cursor-not-allowed">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
+            <div class="space-y-2">
+              <label class="text-xs font-bold text-slate-600 uppercase">Unidad de Carga 1</label>
+              <input type="text" formControlName="gondola1"
+                class="w-full bg-white border border-gray-300 rounded p-2 text-sm text-gray-900 font-medium">
+              <input type="text" formControlName="placaG1"
+                class="w-full bg-white border border-gray-300 rounded p-2 text-xs text-gray-900 font-bold">
+            </div>
+            <div class="space-y-2">
+              <label class="text-xs font-bold text-slate-600 uppercase">Unidad de Carga 2</label>
+              <input type="text" formControlName="gondola2"
+                class="w-full bg-white border border-gray-300 rounded p-2 text-sm text-gray-900 font-medium">
+              <input type="text" formControlName="placaG2"
+                class="w-full bg-white border border-gray-300 rounded p-2 text-xs text-gray-900 font-bold">
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="flex items-center border-b border-gray-200 pb-2 mb-4">
+            <span class="bg-purple-100 text-purple-700 p-2 rounded-full mr-3 text-sm font-bold">02</span>
+            <h3 class="text-lg font-semibold text-gray-700 uppercase">Datos del Producto</h3>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex flex-col">
+              <label class="text-xs font-semibold text-gray-500 mb-1 uppercase">Mina de Origen</label>
+              <input type="text" formControlName="mina"
+                class="bg-gray-50 border border-gray-300 text-gray-600 rounded-lg p-2.5 cursor-not-allowed">
+            </div>
+            <div class="flex flex-col">
+              <label class="text-xs font-semibold text-gray-500 mb-1 uppercase">Tipo de Producto</label>
+              <input type="text" formControlName="producto"
+                class="bg-gray-50 border border-gray-300 text-gray-600 rounded-lg p-2.5 cursor-not-allowed">
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <div class="flex items-center border-b border-gray-200 pb-2 mb-4">
+            <span class="bg-green-100 text-green-700 p-2 rounded-full mr-3 text-sm font-bold">03</span>
+            <h3 class="text-lg font-semibold text-gray-700 uppercase">Datos del Operador</h3>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex flex-col">
+              <label class="text-xs font-semibold text-gray-500 mb-1 uppercase">Nombre Completo</label>
+              <input type="text" formControlName="operador"
+                class="bg-gray-50 border border-gray-300 text-gray-900 font-semibold rounded-lg p-2.5 cursor-not-allowed">
+            </div>
+            <div class="flex flex-col">
+              <label class="text-xs font-semibold text-gray-500 mb-1 uppercase">Teléfono de Contacto</label>
+              <input type="text" formControlName="telefono"
+                class="bg-gray-50 border border-gray-300 text-gray-900 font-mono rounded-lg p-2.5 cursor-not-allowed">
+            </div>
+          </div>
+        </section>
+
+        <section class="bg-yellow-50/50 p-4 rounded-xl border border-yellow-100">
+          <div class="flex items-center border-b border-yellow-200 pb-2 mb-4">
+            <span class="bg-yellow-100 text-yellow-700 p-2 rounded-full mr-3 text-sm font-bold">04</span>
+            <h3 class="text-lg font-semibold text-gray-700 uppercase">Información de Carga</h3>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="flex flex-col">
+              <label class="text-sm font-bold text-gray-800 mb-1">Cantidad en M³ *</label>
+              <input type="number" formControlName="cantidadM3" step="0.01"
+                class="border-2 border-yellow-400 text-gray-900 font-mono rounded-lg p-2.5 cursor-not-allowed"
+                placeholder="0.00">
+            </div>
+            <div class="flex flex-col text-center">
+              <label class="text-sm font-medium text-gray-600 mb-1 uppercase">Fecha de Salida</label>
+              <div class="bg-gray-200 p-3 rounded-lg font-mono text-gray-600">{{ fechaActual }}</div>
+            </div>
+          </div>
+          <div class="mt-4 flex flex-col">
+            <label class="text-sm font-medium text-gray-600 mb-1 uppercase">Observaciones</label>
+            <textarea formControlName="observaciones" rows="2"
+              class="border border-gray-300 text-gray-900 font-mono rounded-lg p-2.5 cursor-not-allowed"
+              placeholder="Notas adicionales..."></textarea>
+          </div>
+        </section>
+
+        <div class="bg-gray-800 p-4 rounded-lg flex flex-wrap justify-between items-center text-white">
+          <div>
+            <p class="text-xs text-gray-400 uppercase font-bold">Despachador</p>
+            <p class="text-sm font-semibold text-blue-300">{{ nombreDespachador }}</p>
+          </div>
+          <div class="text-right border-l border-gray-600 pl-4">
+            <p class="text-xs text-gray-400 uppercase font-bold">Registro de Hora</p>
+            <p class="text-sm font-mono text-yellow-400">{{ horaActual }}</p>
+          </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="flex flex-col">
-            <label class="text-xs font-semibold text-gray-500 mb-1 uppercase">Transportista</label>
-            <input type="text" formControlName="transportista" class="bg-gray-50 border border-gray-300 text-gray-600 rounded-lg p-2.5 cursor-not-allowed">
-          </div>
-          <div class="flex flex-col">
-            <label class="text-xs font-semibold text-gray-500 mb-1 uppercase">Modelo del Tracto</label>
-            <input type="text" formControlName="modelo" class="bg-gray-50 border border-gray-300 text-gray-600 rounded-lg p-2.5 cursor-not-allowed">
-          </div>
-          <div class="flex flex-col">
-            <label class="text-xs font-semibold text-gray-500 mb-1 uppercase">Color</label>
-            <input type="text" formControlName="color" class="bg-gray-50 border border-gray-300 text-gray-600 rounded-lg p-2.5 cursor-not-allowed">
-          </div>
-          <div class="flex flex-col">
-            <label class="text-xs font-semibold text-gray-500 mb-1 uppercase">Placa del Tracto</label>
-            <input type="text" formControlName="placaTracto" class="bg-gray-50 border border-gray-300 text-gray-800 font-bold rounded-lg p-2.5 cursor-not-allowed">
-          </div>
+        <div class="pt-4">
+          <button type="submit" [disabled]="minaForm.invalid || isPosting()"
+            class="w-full bg-blue-700 hover:bg-blue-800 disabled:bg-gray-400 text-white font-bold py-5 rounded-xl shadow-xl transition-all uppercase tracking-widest text-lg">
+            {{ isPosting() ? 'Guardando...' : 'Finalizar Registro de Salida' }}
+          </button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
-          <div class="space-y-2">
-            <label class="text-xs font-bold text-slate-600 uppercase">Unidad de Carga 1</label>
-            <input type="text" formControlName="gondola1" class="w-full bg-white border border-gray-300 rounded p-2 text-sm text-gray-900 font-medium">
-            <input type="text" formControlName="placaG1" class="w-full bg-white border border-gray-300 rounded p-2 text-xs text-gray-900 font-bold">
-          </div>
-          <div class="space-y-2">
-            <label class="text-xs font-bold text-slate-600 uppercase">Unidad de Carga 2</label>
-            <input type="text" formControlName="gondola2" class="w-full bg-white border border-gray-300 rounded p-2 text-sm text-gray-900 font-medium">
-            <input type="text" formControlName="placaG2" class="w-full bg-white border border-gray-300 rounded p-2 text-xs text-gray-900 font-bold">
-          </div>
-        </div>
-      </section>
-
-      <section>
-        <div class="flex items-center border-b border-gray-200 pb-2 mb-4">
-          <span class="bg-purple-100 text-purple-700 p-2 rounded-full mr-3 text-sm font-bold">02</span>
-          <h3 class="text-lg font-semibold text-gray-700 uppercase">Datos del Producto</h3>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="flex flex-col">
-            <label class="text-xs font-semibold text-gray-500 mb-1 uppercase">Mina de Origen</label>
-            <input type="text" formControlName="mina" class="bg-gray-50 border border-gray-300 text-gray-600 rounded-lg p-2.5 cursor-not-allowed">
-          </div>
-          <div class="flex flex-col">
-            <label class="text-xs font-semibold text-gray-500 mb-1 uppercase">Tipo de Producto</label>
-            <input type="text" formControlName="producto" class="bg-gray-50 border border-gray-300 text-gray-600 rounded-lg p-2.5 cursor-not-allowed">
-          </div>
-        </div>
-      </section>
-
-      <section>
-        <div class="flex items-center border-b border-gray-200 pb-2 mb-4">
-          <span class="bg-green-100 text-green-700 p-2 rounded-full mr-3 text-sm font-bold">03</span>
-          <h3 class="text-lg font-semibold text-gray-700 uppercase">Datos del Operador</h3>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="flex flex-col">
-            <label class="text-xs font-semibold text-gray-500 mb-1 uppercase">Nombre Completo</label>
-            <input type="text" formControlName="operador" class="bg-gray-50 border border-gray-300 text-gray-900 font-semibold rounded-lg p-2.5 cursor-not-allowed">
-          </div>
-          <div class="flex flex-col">
-            <label class="text-xs font-semibold text-gray-500 mb-1 uppercase">Teléfono de Contacto</label>
-            <input type="text" formControlName="telefono" class="bg-gray-50 border border-gray-300 text-gray-900 font-mono rounded-lg p-2.5 cursor-not-allowed">
-          </div>
-        </div>
-      </section>
-
-      <section class="bg-yellow-50/50 p-4 rounded-xl border border-yellow-100">
-        <div class="flex items-center border-b border-yellow-200 pb-2 mb-4">
-          <span class="bg-yellow-100 text-yellow-700 p-2 rounded-full mr-3 text-sm font-bold">04</span>
-          <h3 class="text-lg font-semibold text-gray-700 uppercase">Información de Carga</h3>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="flex flex-col">
-            <label class="text-sm font-bold text-gray-800 mb-1">Cantidad en M³ *</label>
-            <input type="number" formControlName="cantidadM3" step="0.01" class="border-2 border-yellow-400 text-gray-900 font-mono rounded-lg p-2.5 cursor-not-allowed" placeholder="0.00">
-          </div>
-          <div class="flex flex-col text-center">
-            <label class="text-sm font-medium text-gray-600 mb-1 uppercase">Fecha de Salida</label>
-            <div class="bg-gray-200 p-3 rounded-lg font-mono text-gray-600">{{ fechaActual }}</div>
-          </div>
-        </div>
-        <div class="mt-4 flex flex-col">
-          <label class="text-sm font-medium text-gray-600 mb-1 uppercase">Observaciones</label>
-          <textarea formControlName="observaciones" rows="2" class="border border-gray-300 text-gray-900 font-mono rounded-lg p-2.5 cursor-not-allowed" placeholder="Notas adicionales..."></textarea>
-        </div>
-      </section>
-
-      <div class="bg-gray-800 p-4 rounded-lg flex flex-wrap justify-between items-center text-white">
-        <div>
-          <p class="text-xs text-gray-400 uppercase font-bold">Despachador</p>
-          <p class="text-sm font-semibold text-blue-300">{{ nombreDespachador }}</p>
-        </div>
-        <div class="text-right border-l border-gray-600 pl-4">
-          <p class="text-xs text-gray-400 uppercase font-bold">Registro de Hora</p>
-          <p class="text-sm font-mono text-yellow-400">{{ horaActual }}</p>
-        </div>
-      </div>
-
-      <div class="pt-4">
-        <button type="submit" [disabled]="minaForm.invalid || isPosting()" class="w-full bg-blue-700 hover:bg-blue-800 disabled:bg-gray-400 text-white font-bold py-5 rounded-xl shadow-xl transition-all uppercase tracking-widest text-lg">
-          {{ isPosting() ? 'Guardando...' : 'Finalizar Registro de Salida' }}
-        </button>
-      </div>
-
-    </form>
+      </form>
     </details>
     <div class="max-w-6xl mx-auto bg-white shadow-lg rounded-xl overflow-hidden mt-6">
       <details class="group">
@@ -155,54 +173,38 @@
         </summary>
 
         <div class="p-6 overflow-x-auto">
-          <table class="min-w-full border border-gray-200 rounded-lg shadow-sm">
-            <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
-              <tr>
-                <th class="px-4 py-2 border w-12 text-center text-blue-700">Visualizar mas informacion</th>
-                <th class="px-4 py-2 border">Folio</th>
-                <th class="px-4 py-2 border">Modelo</th>
-                <th *ngIf="mostrarColumnaOculta" class="px-4 py-2 border bg-blue-50 text-blue-700">Color</th>
-                <th class="px-4 py-2 border">Placa Tracto</th>
-                <th *ngIf="mostrarColumnaOculta" class="px-4 py-2 border bg-blue-50 text-blue-700">Góndola 1</th>
-                <th *ngIf="mostrarColumnaOculta" class="px-4 py-2 border bg-blue-50 text-blue-700">Góndola 2</th>
-                <th *ngIf="mostrarColumnaOculta" class="px-4 py-2 border bg-blue-50 text-blue-700">M³</th>
-                <th class="px-4 py-2 border">Operador</th>
-                <th class="px-4 py-2 border">Teléfono</th>
-                <th *ngIf="mostrarColumnaOculta" class="px-4 py-2 border bg-blue-50 text-blue-700">Notas</th>
-              </tr>
-            </thead>
-            <tbody class="text-gray-600 text-sm">
-              <tr *ngFor="let unidad of unidadesRegistradas" class="hover:bg-gray-50 transition-colors">
-                <td class="px-4 py-2 border text-center">
-                  <button (click)="mostrarColumnaOculta = !mostrarColumnaOculta" type="button"
-                    class="hover:scale-125 transition-transform text-lg">
-                    {{ mostrarColumnaOculta ? '👁️‍🗨️' : '👁️' }}
-                  </button>
-                </td>
-                <td class="px-4 py-2 border font-bold">{{ unidad.folio }}</td>
-                <td class="px-4 py-2 border">{{ unidad.modelo }}</td>
-                <td *ngIf="mostrarColumnaOculta" class="px-4 py-2 border bg-blue-50/40 italic">{{ unidad.color }}</td>
-                <td class="px-4 py-2 border">{{ unidad.placaTracto }}</td>
-                <td *ngIf="mostrarColumnaOculta" class="px-4 py-2 border bg-blue-50/40">{{ unidad.placaGondola1 }}</td>
-                <td *ngIf="mostrarColumnaOculta" class="px-4 py-2 border bg-blue-50/40">{{ unidad.placaGondola2 }}</td>
-                <td *ngIf="mostrarColumnaOculta" class="px-4 py-2 border bg-blue-50/40">{{ unidad.cantidadM3 }}</td>
-                <td class="px-4 py-2 border">{{ unidad.operador }}</td>
-                <td class="px-4 py-2 border font-mono">{{ unidad.telefono }}</td>
-                <td *ngIf="mostrarColumnaOculta" class="px-4 py-2 border bg-blue-50/40 text-xs">{{ unidad.observaciones
-                  }}</td>
-              </tr>
-            </tbody>
-          </table>
-          <div class="mt-4 text-right">
-  <button (click)="generarPDF()"
-          class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-    Exportar a PDF
-  </button>
-</div>
+  <table class="min-w-full border-collapse border border-gray-300">
+    <thead>
+      <tr class="bg-gray-900 text-white"> <th class="border border-gray-300 px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">Folio</th>
+        <th class="border border-gray-300 px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">Empresa</th>
+        <th class="border border-gray-300 px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">Operador</th>
+        <th class="border border-gray-300 px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">Placa</th>
+        <th class="border border-gray-300 px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">M³</th>
+        <th class="border border-gray-300 px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">Fecha</th>
+      </tr>
+    </thead>
+    <tbody class="bg-white">
+      <tr *ngFor="let viaje of unidadesRegistradas()" class="hover:bg-gray-50 transition-colors">
+        <td class="border border-gray-300 px-4 py-3 text-sm text-gray-900 font-medium">{{ viaje.folio_viaje }}</td>
+        <td class="border border-gray-300 px-4 py-3 text-sm text-gray-900">{{ viaje.nombre_empresa }}</td>
+        <td class="border border-gray-300 px-4 py-3 text-sm text-gray-900">{{ viaje.nombre_operador }}</td>
+        <td class="border border-gray-300 px-4 py-3 text-sm font-mono text-gray-900">{{ viaje.placa_tracto }}</td>
+        <td class="border border-gray-300 px-4 py-3 text-sm text-gray-900">{{ viaje.cantidad_m3 }}</td>
+        <td class="border border-gray-300 px-4 py-3 text-sm text-gray-900">{{ viaje.fecha_viaje | date:'dd/MM/yyyy' }}</td>
+      </tr>
+      <tr *ngIf="unidadesRegistradas().length === 0">
+        <td colspan="6" class="text-center py-10 text-gray-500 italic">
+          No hay unidades registradas actualmente.
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
-        </div>
-      </details>
-    </div>
+  <div class="mt-4 text-right">
+    <button (click)="generarPDF()"
+      class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700 transition shadow-md">
+      📄 Exportar a PDF
+    </button>
   </div>
 </div>
 
@@ -214,4 +216,4 @@
     <button (click)="cerrarModal()" class="mt-4 px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800">
       Cerrar
     </button>
-</div>
+  </div>

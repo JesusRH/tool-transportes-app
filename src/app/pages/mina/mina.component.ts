@@ -4,6 +4,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ZXingScannerModule } from '@zxing/ngx-scanner'; // Importar Escáner
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { ViajeService } from '../../services/viaje.service'; // Ajusta la ruta
 
 @Component({
   selector: 'app-mina',
@@ -15,9 +16,11 @@ export default class MinaComponent implements OnInit {
   private fb = inject(FormBuilder);
   private platformId = inject(PLATFORM_ID);
 
+  private viajeService = inject(ViajeService); // <--- Inyectamos el servicio
+
   public minaForm!: FormGroup;
   public isPosting = signal(false);
-  public escaneadoExitoso = signal(false); // Controla si se muestra el formulario
+  public escaneadoExitoso = signal(true); // Controla si se muestra el formulario
   public mostrarEscaner = signal(false);   // Controla si la cámara está encendida
 
   public nombreDespachador = 'Usuario Test';
@@ -27,18 +30,27 @@ export default class MinaComponent implements OnInit {
   mostrarModal = false;
   mostrarColumnaOculta: boolean = false;
    // 👇 nuevo: arreglo para almacenar las unidades registradas
-  unidadesRegistradas = [
-    { folio: 'F001', modelo: 'Volvo', color: 'Rojo', placaTracto: 'ABC123', placaGondola1: 'XYZ789', placaGondola2: 'LMN456', cantidadM3: 20, operador: 'Juan Pérez', telefono: '555-1234', observaciones: 'Buen estado' },
-    { folio: 'F002', modelo: 'Kenworth', color: 'Azul', placaTracto: 'DEF456', placaGondola1: 'UVW111', placaGondola2: 'OPQ222', cantidadM3: 25, operador: 'Carlos López', telefono: '555-5678', observaciones: 'Revisión pendiente' }
-  ];
+  // 👇 Reemplazamos los datos en duro por un signal vacío
+  public unidadesRegistradas = signal<any[]>([]);
 
   ngOnInit(): void {
     this.initForm();
     if (isPlatformBrowser(this.platformId)) {
       this.obtenerDatosSesion();
       this.actualizarReloj();
+      this.cargarViajes(); // <--- Llamamos a la API al iniciar
     }
     this.obtenerFolio();
+  }
+
+  // Nueva función para traer los datos reales
+  cargarViajes() {
+    this.viajeService.getViajes().subscribe({
+      next: (data) => {
+        this.unidadesRegistradas.set(data);
+      },
+      error: (err) => console.error('Error al cargar viajes', err)
+    });
   }
 
   initForm() {
@@ -124,20 +136,25 @@ export default class MinaComponent implements OnInit {
     this.mostrarModal = false;
   }
 
+  // Actualiza el generador de PDF para usar el valor del signal
   generarPDF() {
-      const doc = new jsPDF();
+    const doc = new jsPDF();
+    doc.text('Reporte de Unidades Registradas', 14, 15);
 
-      doc.text('Reporte de Unidades Registradas', 14, 15);
+    autoTable(doc, {
+      head: [['Folio', 'Empresa', 'Placa', 'M³', 'Operador', 'Fecha']],
+      // Usamos .unidadesRegistradas() con paréntesis porque es un signal
+      body: this.unidadesRegistradas().map(u => [
+        u.folio_viaje,
+        u.nombre_empresa,
+        u.placa_tracto,
+        u.cantidad_m3,
+        u.nombre_operador,
+        u.fecha_viaje
+      ]),
+      startY: 20,
+    });
 
-      autoTable(doc, {
-        head: [['Folio', 'Modelo', 'Color', 'Placa Tracto', 'Góndola 1', 'Góndola 2', 'M³', 'Operador', 'Teléfono', 'Notas']],
-        body: this.unidadesRegistradas.map(u => [
-          u.folio, u.modelo, u.color, u.placaTracto, u.placaGondola1, u.placaGondola2,
-          u.cantidadM3, u.operador, u.telefono, u.observaciones
-        ]),
-        startY: 20,
-      });
-
-      doc.save('unidades.pdf');
-    }
+    doc.save('viajes.pdf');
+  }
 }

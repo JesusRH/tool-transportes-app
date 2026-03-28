@@ -10,7 +10,7 @@ export class ViajeService {
   private http = inject(HttpClient);
 
   // URL de tu backend en Node.js
-  private apiUrl = 'http://localhost:3000/api/viajes';
+  private apiUrl = 'http://192.168.1.226:3000/api/viajes';
 
   /**
    * Obtiene la lista completa de viajes con los JOINs de empresas,

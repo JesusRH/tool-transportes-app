@@ -20,7 +20,7 @@ export default class MinaComponent implements OnInit {
 
   public minaForm!: FormGroup;
   public isPosting = signal(false);
-  public escaneadoExitoso = signal(true); // Controla si se muestra el formulario
+  public escaneadoExitoso = signal(false); // Controla si se muestra el formulario
   public mostrarEscaner = signal(false);   // Controla si la cámara está encendida
 
   public nombreDespachador = 'Usuario Test';
@@ -32,6 +32,9 @@ export default class MinaComponent implements OnInit {
    // 👇 nuevo: arreglo para almacenar las unidades registradas
   // 👇 Reemplazamos los datos en duro por un signal vacío
   public unidadesRegistradas = signal<any[]>([]);
+
+  // Creamos una variable de estado para guardar los IDs del QR
+  public  datosQrIds: any = {};
 
   ngOnInit(): void {
     this.initForm();
@@ -76,10 +79,19 @@ export default class MinaComponent implements OnInit {
   // Esta función se ejecuta cuando el QR es detectado
   onCodeResult(resultString: string) {
     try {
-      // Suponemos que el QR contiene un JSON con la info
       const data = JSON.parse(resultString);
+      console.log("Información del QR:", data);
 
-      // Rellenamos el formulario con la info del QR
+      // Guardamos los IDs que se van a mandar a la base de datos
+      this.datosQrIds = {
+        empresa_id: data.id_empresa,
+        tracto_id: data.id_tracto,
+        operador_id: data.id_operador,
+        mina_id: data.id_mina
+      };
+      console.log("datosQrIds:", this.datosQrIds);
+
+      // Rellenamos el formulario con los nombres legibles
       this.minaForm.patchValue({
         transportista: data.transportista,
         modelo: data.modelo,
@@ -100,6 +112,7 @@ export default class MinaComponent implements OnInit {
       alert("El código QR no tiene el formato correcto");
     }
   }
+
 
   obtenerDatosSesion() {
     const data = localStorage.getItem('user_data');
@@ -126,11 +139,59 @@ export default class MinaComponent implements OnInit {
   guardarRegistro() {
     if (this.minaForm.valid) {
       this.isPosting.set(true);
-      setTimeout(() => {
-        this.isPosting.set(false);
-         this.mostrarModal = true;
-      }, 2000);
+
+      const formValues = this.minaForm.getRawValue();
+
+      // Armando el paquete final con IDs del QR + info manual de Angular
+      const payload = {
+        empresa_id: this.datosQrIds.empresa_id,
+        tracto_id: this.datosQrIds.tracto_id,
+        operador_id: this.datosQrIds.operador_id,
+        mina_id: this.datosQrIds.mina_id,
+        producto: formValues.producto,
+        cantidad_m3: formValues.cantidadM3,
+        observaciones_mina: formValues.observaciones
+      };
+      console.log("Objeto a insertar", payload);
+      // Invocamos al servicio de Angular
+      this.viajeService.crearViaje(payload).subscribe({
+        next: (response) => {
+          this.isPosting.set(false);
+          this.ultimoFolio = response.folio; // Capturamos el ID real de la base de datos
+          this.mostrarModal = true;
+
+          this.cargarViajes(); // Recargamos la tabla para ver el viaje de inmediato
+          this.reiniciarFormulario(); // Limpiamos campos
+        },
+        error: (err) => {
+          this.isPosting.set(false);
+          console.error('Error al guardar viaje', err);
+          alert('No se pudo guardar el viaje en la base de datos.');
+          // ESTO ES LO QUE VERÁS EN EL CELULAR:
+      console.error('Error completo:', err);
+
+      // Mostramos un resumen del error en pantalla
+      const mensajeError = err.error?.message || err.message || 'Error desconocido';
+      const statusError = err.status || 'Sin Status';
+
+      alert(`❌ FALLÓ EL INSERT:\nStatus: ${statusError}\nDetalle: ${mensajeError}`);
+
+      if(statusError === 0) {
+        alert("CONSEJO: El Status 0 significa que el celular no llega al servidor. Revisa que la IP no sea 'localhost'.");
+      }
+        }
+      });
     }
+  }
+
+   // Método auxiliar para limpiar el formulario después del éxito
+  reiniciarFormulario() {
+    this.minaForm.patchValue({
+      cantidadM3: '',
+      observaciones: ''
+    });
+    this.escaneadoExitoso.set(false);
+    this.datosQrIds = {};
   }
    cerrarModal() {
     this.mostrarModal = false;

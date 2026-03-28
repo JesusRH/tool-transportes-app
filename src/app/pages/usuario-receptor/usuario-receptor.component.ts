@@ -13,7 +13,7 @@ export default class UsuarioReceptorComponent implements OnInit {
   private platformId = inject(PLATFORM_ID);
 
   public registroEncontrado = signal(true);
-  public mostrarEscaner = signal(false);
+  public mostrarEscaner = signal(true);
   public cargando = signal(false);
 
   public nombreReceptor = 'JUAN PÉREZ (RECEPTOR)';

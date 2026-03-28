@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 })
 export class AuthService {
   // Esta es la dirección de tu servidor de Node.js
-  private API_URL = 'http://localhost:3000/api';
+  private API_URL = 'http://10.229.117.220:3000/api';
 
   constructor(private http: HttpClient) { }
 

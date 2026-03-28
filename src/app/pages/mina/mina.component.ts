@@ -161,7 +161,7 @@ export default class MinaComponent implements OnInit {
           this.mostrarModal = true;
 
           this.cargarViajes(); // Recargamos la tabla para ver el viaje de inmediato
-          this.reiniciarFormulario(); // Limpiamos campos
+
         },
         error: (err) => {
           this.isPosting.set(false);
@@ -194,6 +194,7 @@ export default class MinaComponent implements OnInit {
     this.datosQrIds = {};
   }
    cerrarModal() {
+     this.reiniciarFormulario(); // Limpiamos campos
     this.mostrarModal = false;
   }
 

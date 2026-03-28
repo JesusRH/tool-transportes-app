@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, inject, signal, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ZXingScannerModule } from '@zxing/ngx-scanner'; // Importar Escáner
@@ -13,6 +13,8 @@ import { ViajeService } from '../../services/viaje.service'; // Ajusta la ruta
   templateUrl: './mina.component.html',
 })
 export default class MinaComponent implements OnInit {
+
+  constructor(private cd: ChangeDetectorRef) {}
   private fb = inject(FormBuilder);
   private platformId = inject(PLATFORM_ID);
 
@@ -26,15 +28,15 @@ export default class MinaComponent implements OnInit {
   public nombreDespachador = 'Usuario Test';
   public horaActual = '';
   public fechaActual = '';
-  public ultimoFolio:any = 0;
-  mostrarModal = false;
+  public ultimoFolio: any = 0;
+  mostrarModal = signal(false);
   mostrarColumnaOculta: boolean = false;
-   // 👇 nuevo: arreglo para almacenar las unidades registradas
+  // 👇 nuevo: arreglo para almacenar las unidades registradas
   // 👇 Reemplazamos los datos en duro por un signal vacío
   public unidadesRegistradas = signal<any[]>([]);
 
   // Creamos una variable de estado para guardar los IDs del QR
-  public  datosQrIds: any = {};
+  public datosQrIds: any = {};
 
   ngOnInit(): void {
     this.initForm();
@@ -137,65 +139,85 @@ export default class MinaComponent implements OnInit {
   }
 
   guardarRegistro() {
-    if (this.minaForm.valid) {
-      this.isPosting.set(true);
-
-      const formValues = this.minaForm.getRawValue();
-
-      // Armando el paquete final con IDs del QR + info manual de Angular
-      const payload = {
-        empresa_id: this.datosQrIds.empresa_id,
-        tracto_id: this.datosQrIds.tracto_id,
-        operador_id: this.datosQrIds.operador_id,
-        mina_id: this.datosQrIds.mina_id,
-        producto: formValues.producto,
-        cantidad_m3: formValues.cantidadM3,
-        observaciones_mina: formValues.observaciones
-      };
-      console.log("Objeto a insertar", payload);
-      // Invocamos al servicio de Angular
-      this.viajeService.crearViaje(payload).subscribe({
-        next: (response) => {
-          this.isPosting.set(false);
-          this.ultimoFolio = response.folio; // Capturamos el ID real de la base de datos
-          this.mostrarModal = true;
-
-          this.cargarViajes(); // Recargamos la tabla para ver el viaje de inmediato
-
-        },
-        error: (err) => {
-          this.isPosting.set(false);
-          console.error('Error al guardar viaje', err);
-          alert('No se pudo guardar el viaje en la base de datos.');
-          // ESTO ES LO QUE VERÁS EN EL CELULAR:
-      console.error('Error completo:', err);
-
-      // Mostramos un resumen del error en pantalla
-      const mensajeError = err.error?.message || err.message || 'Error desconocido';
-      const statusError = err.status || 'Sin Status';
-
-      alert(`❌ FALLÓ EL INSERT:\nStatus: ${statusError}\nDetalle: ${mensajeError}`);
-
-      if(statusError === 0) {
-        alert("CONSEJO: El Status 0 significa que el celular no llega al servidor. Revisa que la IP no sea 'localhost'.");
-      }
-        }
-      });
+    // 1. Si el formulario es inválido, no hacemos nada y aseguramos que isPosting sea falso
+    if (this.minaForm.invalid) {
+      this.isPosting.set(false);
+      alert('Por favor, llena todos los campos obligatorios.');
+      return;
     }
+
+    // 2. BLOQUEAMOS EL BOTÓN DE INMEDIATO
+    this.isPosting.set(true);
+    this.cd.detectChanges();
+
+    const formValues = this.minaForm.getRawValue();
+
+    // Armando el paquete final con IDs del QR + info manual de Angular
+    const payload = {
+      empresa_id: this.datosQrIds.empresa_id,
+      tracto_id: this.datosQrIds.tracto_id,
+      operador_id: this.datosQrIds.operador_id,
+      mina_id: this.datosQrIds.mina_id,
+      producto: formValues.producto,
+      cantidad_m3: formValues.cantidadM3,
+      observaciones_mina: formValues.observaciones
+    };
+    console.log("Objeto a insertar", payload);
+    // Invocamos al servicio de Angular
+    this.viajeService.crearViaje(payload).subscribe({
+      next: (response) => {
+        // 1. Apagamos el estado de carga y guardamos el folio
+        this.isPosting.set(false);
+        this.ultimoFolio = response.folio;
+
+        // 2. DISPARAMOS EL MODAL PRIMERO (Prioridad máxima)
+        this.mostrarModal.set(true);
+
+        // 3. MANDAMOS AL FINAL DE LA COLA LO QUE "PESA"
+        // Usamos un tiempo corto, pero suficiente para que el navegador pinte el modal
+        setTimeout(() => {
+          // Estas funciones suelen reconstruir el DOM de la tabla y resetear validaciones,
+          // por eso "traban" la aparición del modal si se ejecutan al mismo tiempo.
+          this.cargarViajes();
+          this.minaForm.reset();
+        }, 300);
+      },
+      error: (err) => {
+        this.isPosting.set(false);
+        console.error('Error al guardar viaje', err);
+        alert('No se pudo guardar el viaje en la base de datos.');
+        // ESTO ES LO QUE VERÁS EN EL CELULAR:
+        console.error('Error completo:', err);
+
+        // Mostramos un resumen del error en pantalla
+        const mensajeError = err.error?.message || err.message || 'Error desconocido';
+        const statusError = err.status || 'Sin Status';
+
+        alert(`❌ FALLÓ EL INSERT:\nStatus: ${statusError}\nDetalle: ${mensajeError}`);
+
+        if (statusError === 0) {
+          alert("CONSEJO: El Status 0 significa que el celular no llega al servidor. Revisa que la IP no sea 'localhost'.");
+        }
+      }
+    });
+
   }
 
-   // Método auxiliar para limpiar el formulario después del éxito
+  // Método auxiliar para limpiar el formulario después del éxito
   reiniciarFormulario() {
     this.minaForm.patchValue({
       cantidadM3: '',
       observaciones: ''
     });
-    this.escaneadoExitoso.set(false);
     this.datosQrIds = {};
   }
-   cerrarModal() {
+  cerrarModal() {
+
+    this.mostrarModal.set(false);
      this.reiniciarFormulario(); // Limpiamos campos
-    this.mostrarModal = false;
+    // Si usas un booleano para el escáner exitoso, regrésalo a false aquí
+  this.escaneadoExitoso.set(false);
+  this.mostrarEscaner.set(true); // Listo para el siguiente QR
   }
 
   // Actualiza el generador de PDF para usar el valor del signal
